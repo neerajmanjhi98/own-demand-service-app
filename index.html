@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Own Demand Service App - Demo</title>
+<style>
+:root{--navy:#16345b;--blue:#2f6fed;--teal:#168b83;--bg:#f4f7fb;--text:#233044}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(120deg,var(--navy),var(--blue));color:white;padding:26px 7%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+header h1{margin:0;font-size:25px}header p{margin:7px 0 0;opacity:.9}.badge{background:#ffffff20;padding:9px 13px;border-radius:20px}
+main{max-width:1100px;margin:24px auto;padding:0 18px}.hero{background:white;padding:24px;border-radius:16px;box-shadow:0 4px 18px #16345b12}
+.hero h2{margin:0 0 8px}.muted{color:#66758a;line-height:1.5}.section-title{margin:25px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.service{background:white;border:2px solid transparent;border-radius:14px;padding:18px;cursor:pointer;box-shadow:0 4px 16px #16345b0d;transition:.15s}
+.service:hover,.service.active{border-color:var(--blue);transform:translateY(-2px)}.emoji{font-size:32px}.service h3{margin:10px 0 6px}.service p{margin:0;color:#6b7788;font-size:14px}
+.panel{margin-top:22px;background:white;padding:22px;border-radius:16px;box-shadow:0 4px 18px #16345b12}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+label{display:block;font-size:14px;font-weight:bold;margin-bottom:7px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cdd6e2;border-radius:9px;font:inherit;background:white}
+textarea{min-height:44px;resize:vertical}.full{grid-column:1/-1}
+button{border:0;border-radius:9px;padding:12px 18px;background:var(--blue);color:white;font-weight:bold;font-size:15px;cursor:pointer}
+button:hover{filter:brightness(.94)}.secondary{background:#eaf1ff;color:var(--navy)}
+.hidden{display:none}.confirmation{margin-top:18px;padding:16px;background:#e9f8f2;border:1px solid #a5ddc8;border-radius:12px}
+.statusbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.step{padding:8px 10px;border-radius:20px;background:#edf0f5;color:#647084;font-size:13px}.step.done{background:#d8f4e9;color:#14734e}
+footer{text-align:center;color:#718096;padding:25px;font-size:13px}
+@media(max-width:600px){header{padding:22px 18px}header h1{font-size:21px}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Own Demand Service App</h1><p>Book everyday services from one place</p></div>
+  <div class="badge">Student Demo Prototype</div>
+</header>
+<main>
+  <section class="hero">
+    <h2>Welcome! What service do you need?</h2>
+    <p class="muted">Choose a category, enter your details, select a preferred date and submit a booking request. This is a browser-based academic demo; it does not contact real service providers.</p>
+  </section>
+  <h2 class="section-title">1. Select a service</h2>
+  <section class="grid" id="services">
+    <div class="service" data-service="Home Cleaning"><div class="emoji">🧹</div><h3>Home Cleaning</h3><p>Room and home cleaning</p></div>
+    <div class="service" data-service="Plumbing"><div class="emoji">🔧</div><h3>Plumbing</h3><p>Tap and pipe repair</p></div>
+    <div class="service" data-service="Electrician"><div class="emoji">💡</div><h3>Electrician</h3><p>Electrical maintenance</p></div>
+    <div class="service" data-service="Appliance Repair"><div class="emoji">🛠️</div><h3>Appliance Repair</h3><p>Basic appliance service</p></div>
+    <div class="service" data-service="Salon / Personal Care"><div class="emoji">✂️</div><h3>Salon / Personal Care</h3><p>Personal care appointment</p></div>
+    <div class="service" data-service="Other Service"><div class="emoji">📋</div><h3>Other Service</h3><p>Describe what you need</p></div>
+  </section>
+  <section class="panel">
+    <h2>2. Booking details</h2>
+    <form id="bookingForm">
+      <div><label for="name">Customer name *</label><input id="name" required placeholder="Enter your name"></div>
+      <div><label for="phone">Phone number *</label><input id="phone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number"></div>
+      <div><label for="date">Preferred date *</label><input id="date" type="date" required></div>
+      <div><label for="time">Preferred time *</label><select id="time" required><option value="">Choose time</option><option>9 AM - 12 PM</option><option>12 PM - 3 PM</option><option>3 PM - 6 PM</option><option>6 PM - 8 PM</option></select></div>
+      <div class="full"><label for="address">Address / locality *</label><input id="address" required placeholder="Enter area or address"></div>
+      <div class="full"><label for="issue">Service requirements</label><textarea id="issue" placeholder="Briefly describe the work required"></textarea></div>
+      <div class="full"><button type="submit">Confirm Demo Booking</button> <button type="button" class="secondary" id="resetBtn">Clear Form</button></div>
+    </form>
+    <div id="confirmation" class="confirmation hidden" aria-live="polite"></div>
+  </section>
+  <section class="panel">
+    <h2>3. Track booking status</h2>
+    <p class="muted">After you create a demo booking, its sample status appears here. For presentation, you can update the status using the buttons.</p>
+    <div id="statusArea" class="muted">No booking created yet.</div>
+    <div id="statusButtons" class="hidden" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="secondary" data-status="Confirmed">Mark Confirmed</button>
+      <button type="button" class="secondary" data-status="In Progress">Mark In Progress</button>
+      <button type="button" class="secondary" data-status="Completed">Mark Completed</button>
+    </div>
+  </section>
+</main>
+<footer>Own Demand Service App · Mini Project Demonstration Prototype · No real booking is sent</footer>
+<script>
+let selectedService = "";
+let currentBooking = null;
+const cards = [...document.querySelectorAll(".service")];
+cards.forEach(card => card.addEventListener("click", () => {
+  cards.forEach(c => c.classList.remove("active"));
+  card.classList.add("active");
+  selectedService = card.dataset.service;
+}));
+const dateInput = document.getElementById("date");
+const today = new Date();
+dateInput.min = new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+document.getElementById("bookingForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if (!selectedService) { alert("Please select a service category first."); return; }
+  const phone = document.getElementById("phone").value.trim();
+  if (!/^[0-9]{10}$/.test(phone)) { alert("Please enter a valid 10-digit phone number."); return; }
+  currentBooking = {
+    id: "ODS" + Math.floor(10000 + Math.random()*90000),
+    name: document.getElementById("name").value.trim(),
+    service: selectedService,
+    date: document.getElementById("date").value,
+    time: document.getElementById("time").value,
+    address: document.getElementById("address").value.trim(),
+    issue: document.getElementById("issue").value.trim(),
+    status: "Booking Requested"
+  };
+  renderBooking();
+});
+function renderBooking(){
+  const box = document.getElementById("confirmation");
+  box.classList.remove("hidden");
+  box.innerHTML = `<strong>Demo booking created successfully!</strong><br>Booking ID: <b>${currentBooking.id}</b><br>Customer: ${escapeHTML(currentBooking.name)}<br>Service: ${escapeHTML(currentBooking.service)}<br>Date & time: ${escapeHTML(currentBooking.date)} · ${escapeHTML(currentBooking.time)}<br>Status: <b>${escapeHTML(currentBooking.status)}</b><br><small>Demo only — no real provider has been contacted.</small>`;
+  document.getElementById("statusArea").innerHTML = `<b>${escapeHTML(currentBooking.id)}</b> — ${escapeHTML(currentBooking.service)}<div class="statusbar"><span class="step done">Request received</span><span class="step ${["Confirmed","In Progress","Completed"].includes(currentBooking.status)?"done":""}">Confirmed</span><span class="step ${["In Progress","Completed"].includes(currentBooking.status)?"done":""}">In Progress</span><span class="step ${currentBooking.status==="Completed"?"done":""}">Completed</span></div><p>Current status: <b>${escapeHTML(currentBooking.status)}</b></p>`;
+  document.getElementById("statusButtons").classList.remove("hidden");
+}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+document.querySelectorAll("[data-status]").forEach(btn=>btn.addEventListener("click",()=>{
+  if(!currentBooking){alert("Create a booking first.");return;}
+  currentBooking.status=btn.dataset.status; renderBooking();
+}));
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  document.getElementById("bookingForm").reset(); selectedService=""; currentBooking=null;
+  cards.forEach(c=>c.classList.remove("active"));
+  document.getElementById("confirmation").classList.add("hidden");
+  document.getElementById("statusButtons").classList.add("hidden");
+  document.getElementById("statusArea").textContent="No booking created yet.";
+});
+</script>
+</body>
+</html>
